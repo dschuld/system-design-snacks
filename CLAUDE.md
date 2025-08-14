@@ -8,22 +8,23 @@ This is a web-based educational platform called "System Design Snacks" - an inte
 
 ## Architecture
 
-**Single-File Application**: The entire application is contained in `simple_learning_journey.html` - a self-contained HTML file with embedded CSS and JavaScript.
+**Multi-File Application**: The application consists of a main HTML file with external journey data files to enable modular content management.
 
 **Core Components**:
-- **Content Management**: All lesson content is embedded in the `contentSources` object within the JavaScript
+- **Main Application**: `simple_learning_journey.html` contains the UI, styling, and core JavaScript logic
+- **External Journey Data**: Individual `.js` files in the `journeys/` directory contain lesson content
 - **Journey System**: Modular learning paths (currently "Database Sharding" and "Caching Strategies")
 - **Lesson Structure**: Each lesson contains goals, content sections, exercises, and navigation
 - **State Management**: Simple global state tracking current journey and lesson progress
 
 **Key Data Structures**:
 ```javascript
-contentSources = {
-  "journey-id": {
-    title, description, totalLessons, available,
-    lessons: [{ id, title, duration, goals, content }]
-  }
-}
+// In journey files (e.g., journeys/database-sharding.js)
+window.journeyData = window.journeyData || {};
+window.journeyData['journey-id'] = {
+  title, description, totalLessons, available,
+  lessons: [{ id, title, duration, goals, content }]
+};
 ```
 
 **Content Types**:
@@ -36,10 +37,12 @@ contentSources = {
 **Testing**: Open `simple_learning_journey.html` in a web browser - no build process required.
 
 **Adding New Content**:
-1. Add new journey to `contentSources` object
-2. Follow existing lesson structure with `goals` and `content` fields
-3. Use established CSS classes for consistent styling
-4. Add emoji mapping in `getJourneyEmoji()` function
+1. Create a new `.js` file in the `journeys/` directory (e.g., `journeys/new-topic.js`)
+2. Follow the established data structure with `window.journeyData['topic-id']` format
+3. Include the new script in the HTML file's `<head>` section
+4. Follow existing lesson structure with `goals` and `content` fields
+5. Use established CSS classes for consistent styling
+6. Add emoji mapping in `getJourneyEmoji()` function
 
 **Content Guidelines**:
 - Each lesson should be 10-15 minutes
@@ -49,7 +52,10 @@ contentSources = {
 
 ## Key Files
 
-- `simple_learning_journey.html`: Complete application (HTML/CSS/JavaScript)
+- `simple_learning_journey.html`: Main application (HTML/CSS/JavaScript logic)
+- `journeys/`: Directory containing external journey data files
+  - `database-sharding.js`: Database sharding lesson content
+  - `caching-strategies.js`: Caching strategies lesson content  
 - `CLAUDE.md`: This documentation file
 
 ## Styling System

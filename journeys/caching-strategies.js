@@ -1,0 +1,52 @@
+// Caching Strategies Journey Data
+window.journeyData = window.journeyData || {};
+window.journeyData['caching-strategies'] = {
+  "title": "Caching Strategies Deep Dive",
+  "description": "4 lessons, ~12 min each",
+  "totalLessons": 4,
+  "available": true,
+  "lessons": [
+    {
+      "id": 1,
+      "title": "Why Caching? Performance vs Complexity",
+      "duration": 10,
+      "goals": [
+        "Understand when caching provides value",
+        "Learn the fundamental cache performance equation",
+        "Recognize caching trade-offs and complexity costs"
+      ],
+      "content": "<div class=\"concept-section\">\n<h3>The Performance Problem</h3>\n<p>Your e-commerce site loads product details from a database. Each page load requires:</p>\n<ul>\n<li>Database query: 50ms</li>\n<li>Network latency: 20ms</li>\n<li>Processing: 10ms</li>\n<li><strong>Total: 80ms per request</strong></li>\n</ul>\n<p>With 10,000 concurrent users, your database is overwhelmed and response times climb to 2+ seconds.</p>\n</div>\n\n<div class=\"concept-section\">\n<h3>How Caching Helps</h3>\n<p>Cache the product data in memory:</p>\n<ul>\n<li>Cache hit: 2ms (super fast!)</li>\n<li>Cache miss: 80ms (original speed)</li>\n<li>With 90% hit rate: Average response = (0.9 × 2ms) + (0.1 × 80ms) = 9.8ms</li>\n</ul>\n<p><strong>Result:</strong> 8x faster responses + dramatically reduced database load</p>\n</div>\n\n<div class=\"exercise\">\n<h3>🧠 When to Cache?</h3>\n<p><strong>Scenario A:</strong> User profile data (changes rarely, read frequently)</p>\n<p><strong>Scenario B:</strong> Real-time stock prices (changes constantly)</p>\n<p><strong>Scenario C:</strong> Blog post content (rarely changes, read by many)</p>\n<p><strong>Question:</strong> Which scenarios would benefit most from caching? Why?</p>\n</div>"
+    },
+    {
+      "id": 2,
+      "title": "Cache-Aside Pattern Implementation",
+      "duration": 12,
+      "goals": [
+        "Master the most common caching pattern",
+        "Understand cache-aside implementation details",
+        "Learn when cache-aside is the right choice"
+      ],
+      "content": "<div class=\"concept-section\">\n<h3>How Cache-Aside Works</h3>\n<p>Cache-aside puts the application in control of both cache and database.</p>\n\n<p><strong>Read Flow:</strong></p>\n<ol>\n<li>Check cache for data</li>\n<li>If cache hit: return data</li>\n<li>If cache miss: query database, store in cache, return data</li>\n</ol>\n</div>\n\n<div class=\"exercise\">\n<h3>🛠️ Design Challenge</h3>\n<p>Design cache-aside for a news website where articles are read 1000x more than updated.</p>\n<p>Consider: cache keys, TTL, update handling</p>\n</div>"
+    },
+    {
+      "id": 3,
+      "title": "Write-Through vs Write-Behind",
+      "duration": 14,
+      "goals": [
+        "Compare write-through and write-behind patterns",
+        "Understand consistency vs performance trade-offs"
+      ],
+      "content": "<div class=\"concept-section\">\n<h3>Write-Through Pattern</h3>\n<p>Every write goes to both cache and database simultaneously.</p>\n<p><strong>Benefit:</strong> Strong consistency</p>\n<p><strong>Cost:</strong> Slower writes</p>\n</div>\n\n<div class=\"concept-section\">\n<h3>Write-Behind Pattern</h3>\n<p>Writes go to cache immediately, database updated later.</p>\n<p><strong>Benefit:</strong> Fast writes</p>\n<p><strong>Risk:</strong> Potential data loss</p>\n</div>"
+    },
+    {
+      "id": 4,
+      "title": "Distributed Caching",
+      "duration": 15,
+      "goals": [
+        "Understand distributed caching architectures",
+        "Master cache invalidation strategies"
+      ],
+      "content": "<div class=\"concept-section\">\n<h3>Why Distributed Caching?</h3>\n<p>Single cache limitations: memory limits, single point of failure, network bottleneck.</p>\n<p><strong>Solution:</strong> Distribute cache across multiple nodes.</p>\n</div>\n\n<div class=\"concept-section\">\n<h3>🎉 Caching Mastery Complete!</h3>\n<p>You now understand the complete caching toolkit!</p>\n</div>"
+    }
+  ]
+};
