@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Design Learning Journey</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .controls {
+            background: #f5f5f5;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .journey-selector {
+            margin: 10px 0;
+        }
+        .journey-option {
+            display: block;
+            margin: 5px 0;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .journey-option.selected {
+            background: #007bff;
+            color: white;
+        }
+        .journey-option.unavailable {
+            background: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+        .start-btn {
+            background: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .lesson-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .lesson-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .progress {
+            margin: 10px 0;
+        }
+        .progress-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+            margin: 0 5px;
+        }
+        .progress-dot.completed {
+            background: #28a745;
+        }
+        .progress-dot.current {
+            background: #007bff;
+        }
+        .navigation {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .nav-btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            margin: 0 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .learning-goals {
+            background: #e8f4f8;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #007bff;
+        }
+        .concept-section {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .exercise {
+            background: #fff3cd;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .hidden {
+            display: none;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <h1>System Design Learning Journey</h1>
+        <h3>Choose Your Learning Journey:</h3>
+        <div id="journey-selector" class="journey-selector">
+            <div class="loading">Loading available journeys...</div>
+        </div>
+        <button class="start-btn" onclick="startJourney()">Start Learning Journey</button>
+    </div>
+
+    <div id="content" class="hidden">
+        <!-- Lesson content will be populated here -->
+    </div>
+
+    <script>
+        // Global state
+        let availableJourneys = {};
+        let currentJourneyId = null;
+        let currentLessonId = 1;
+
+        // Content sources - in a real implementation, these would be separate JSON files
+        const contentSources = {
+            "database-sharding": {
+                title: "Database Sharding Mastery",
+                description: "3 lessons, ~10 min each",
+                totalLessons: 3,
+                available: true,
+                lessons: [
+                    {
+                        id: 1,
+                        title: "Why Do Databases Need Sharding?",
+                        duration: 10,
+                        goals: [
+                            "Understand the difference between vertical and horizontal scaling",
+                            "Identify when sharding becomes necessary",
+                            "Recognize the trade-offs of database sharding"
+                        ],
+                        content: `
+                            <div class="concept-section">
+                                <h3>The Database Growth Problem</h3>
+                                <p>Imagine you're building Instagram. You start with 1,000 users and a single PostgreSQL database. Everything works perfectly!</p>
+                                <p>But what happens when you reach:</p>
+                                <ul>
+                                    <li><strong>1 million users:</strong> Database starts getting slower</li>
+                                    <li><strong>10 million users:</strong> Timeouts during peak hours</li>
+                                    <li><strong>100 million users:</strong> Single database can't handle the load</li>
+                                </ul>
+                            </div>
+
+                            <div class="concept-section">
+                                <h3>Two Approaches to Scaling</h3>
+                                <p><strong>Vertical Scaling (Scale Up):</strong></p>
+                                <ul>
+                                    <li>✅ Buy a bigger, more powerful server</li>
+                                    <li>✅ Simple - no code changes needed</li>
+                                    <li>❌ Eventually hits hardware limits</li>
+                                    <li>❌ Very expensive for high-end servers</li>
+                                    <li>❌ Single point of failure</li>
+                                </ul>
+
+                                <p><strong>Horizontal Scaling (Scale Out):</strong></p>
+                                <ul>
+                                    <li>✅ Use multiple smaller servers working together</li>
+                                    <li>✅ Nearly unlimited scaling potential</li>
+                                    <li>✅ Better fault tolerance</li>
+                                    <li>❌ Complex to implement</li>
+                                    <li>❌ Data consistency challenges</li>
+                                </ul>
+                            </div>
+
+                            <div class="exercise">
+                                <h3>🧠 Understanding Check</h3>
+                                <p><strong>Scenario:</strong> Your startup's user table has 50 million rows. Database queries take 5+ seconds during peak hours. Your server has 64GB RAM and 32 CPU cores.</p>
+                                <p><strong>Question:</strong> Would you try vertical or horizontal scaling first? Why?</p>
+                                <p><em>Think about this - we'll explore the solutions in the next lessons!</em></p>
+                            </div>
+                        `
+                    },
+                    {
+                        id: 2,
+                        title: "Range-Based Sharding Strategy",
+                        duration: 10,
+                        goals: [
+                            "Learn how range-based sharding works",
+                            "Understand the advantages and disadvantages",
+                            "Identify when to use range-based sharding"
+                        ],
+                        content: `
+                            <div class="concept-section">
+                                <h3>What is Range-Based Sharding?</h3>
+                                <p>Think of organizing books in a library:</p>
+                                <ul>
+                                    <li>Shelf 1: Books A-F</li>
+                                    <li>Shelf 2: Books G-M</li>
+                                    <li>Shelf 3: Books N-Z</li>
+                                </ul>
+                                <p>Range-based sharding works the same way - we split data into continuous ranges.</p>
+                            </div>
+
+                            <div class="concept-section">
+                                <h3>Example: User ID Sharding</h3>
+                                <p><strong>Shard 1:</strong> User IDs 1 - 10,000,000</p>
+                                <p><strong>Shard 2:</strong> User IDs 10,000,001 - 20,000,000</p>
+                                <p><strong>Shard 3:</strong> User IDs 20,000,001 - 30,000,000</p>
+                                
+                                <p>When your app needs to find user 15,555,555:</p>
+                                <ol>
+                                    <li>Check: 15,555,555 > 10,000,000? Yes</li>
+                                    <li>Check: 15,555,555 ≤ 20,000,000? Yes</li>
+                                    <li>Route query to Shard 2</li>
+                                </ol>
+                            </div>
+
+                            <div class="concept-section">
+                                <h3>Pros and Cons</h3>
+                                <p><strong>✅ Advantages:</strong></p>
+                                <ul>
+                                    <li>Very simple to implement</li>
+                                    <li>Range queries work efficiently</li>
+                                    <li>Easy to add new shards</li>
+                                    <li>Predictable data location</li>
+                                </ul>
+
+                                <p><strong>❌ The Big Problem: Hotspots!</strong></p>
+                                <ul>
+                                    <li>New users get higher IDs</li>
+                                    <li>All new user activity hits the last shard</li>
+                                    <li>Uneven load distribution</li>
+                                    <li>Some shards idle while others are overloaded</li>
+                                </ul>
+                            </div>
+
+                            <div class="exercise">
+                                <h3>🛠️ Design Exercise</h3>
+                                <p><strong>Your task:</strong> You're designing sharding for a blog platform with 1 million posts.</p>
+                                <p><strong>Think about:</strong></p>
+                                <ul>
+                                    <li>What field would you shard by? (post_id, user_id, creation_date?)</li>
+                                    <li>How would you handle new posts?</li>
+                                    <li>What queries would be fast vs slow?</li>
+                                </ul>
+                                <p><em>We'll learn a better approach in the next lesson!</em></p>
+                            </div>
+                        `
+                    },
+                    {
+                        id: 3,
+                        title: "Hash-Based Sharding Strategy",
+                        duration: 12,
+                        goals: [
+                            "Understand how hash-based sharding solves hotspot problems",
+                            "Learn the trade-offs between range-based and hash-based approaches",
+                            "Know when to choose each strategy"
+                        ],
+                        content: `
+                            <div class="concept-section">
+                                <h3>Solving the Hotspot Problem</h3>
+                                <p>Range-based sharding had a big issue: hotspots. Hash-based sharding solves this by distributing data pseudo-randomly.</p>
+                                <p>Instead of predictable ranges, we use a hash function to scatter data evenly across all shards.</p>
+                            </div>
+
+                            <div class="concept-section">
+                                <h3>How Hash-Based Sharding Works</h3>
+                                <p><strong>Step 1:</strong> Take the user ID and run it through a hash function</p>
+                                <p><strong>Step 2:</strong> Use modulo to determine the shard</p>
+                                
+                                <p><strong>Example with 3 shards:</strong></p>
+                                <ul>
+                                    <li>User ID 12345 → hash(12345) = 7891 → 7891 % 3 = 1 → Shard 1</li>
+                                    <li>User ID 67890 → hash(67890) = 3456 → 3456 % 3 = 0 → Shard 0</li>
+                                    <li>User ID 99999 → hash(99999) = 8765 → 8765 % 3 = 2 → Shard 2</li>
+                                </ul>
+                                
+                                <p>Result: Even distribution across all shards, no matter what the user IDs are!</p>
+                            </div>
+
+                            <div class="concept-section">
+                                <h3>Comparison: Range vs Hash</h3>
+                                <p><strong>Range-Based Sharding:</strong></p>
+                                <ul>
+                                    <li>✅ Range queries efficient (get all users 1000-2000)</li>
+                                    <li>✅ Easy to understand and debug</li>
+                                    <li>❌ Hotspot problems</li>
+                                    <li>❌ Uneven distribution</li>
+                                    <li><strong>Best for:</strong> Time-series data, archival systems</li>
+                                </ul>
+
+                                <p><strong>Hash-Based Sharding:</strong></p>
+                                <ul>
+                                    <li>✅ Perfect even distribution</li>
+                                    <li>✅ No hotspots</li>
+                                    <li>❌ Range queries impossible</li>
+                                    <li>❌ Adding/removing shards requires data migration</li>
+                                    <li><strong>Best for:</strong> User data, high-traffic systems</li>
+                                </ul>
+                            </div>
+
+                            <div class="exercise">
+                                <h3>🧮 Quick Math Practice</h3>
+                                <p>Calculate which shard these users belong to (with 4 shards):</p>
+                                <ul>
+                                    <li>User 55555: hash(55555) = 12345 → Shard = ?</li>
+                                    <li>User 99999: hash(99999) = 8765 → Shard = ?</li>
+                                </ul>
+                                <p><strong>Answers:</strong> 12345 % 4 = 1, 8765 % 4 = 1</p>
+                                <p>Both users end up on Shard 1 - that's just random chance with hashing!</p>
+                            </div>
+
+                            <div class="concept-section">
+                                <h3>🎉 Congratulations!</h3>
+                                <p>You've completed Database Sharding fundamentals! You now understand:</p>
+                                <ul>
+                                    <li>✅ When and why to use database sharding</li>
+                                    <li>✅ Range-based vs hash-based strategies</li>
+                                    <li>✅ Trade-offs and when to use each approach</li>
+                                </ul>
+                                <p><strong>Next steps:</strong> Practice designing sharding strategies for different scenarios, or explore advanced topics like consistent hashing!</p>
+                            </div>
+                        `
+                    }
+                ]
+            },
+            "caching-strategies": {
+                title: "Caching Strategies Deep Dive",
+                description: "4 lessons, ~12 min each",
+                totalLessons: 4,
+                available: true,
+                lessons: [
+                    {
+                        id: 1,
+                        title: "Why Caching? Performance vs Complexity",
+                        duration: 10,
+                        goals: [
+                            "Understand when caching provides value",
+                            "Learn the fundamental cache performance equation",
+                            "Recognize caching trade-offs and complexity costs"
+                        ],
+                        content: `
+                            <div class="concept-section">
+                                <h3>The Performance Problem</h3>
+                                <p>Your e-commerce site loads product details from a database. Each page load requires:</p>
+                                <ul>
+                                    <li>Database query: 50ms</li>
+                                    <li>Network latency: 20ms</li>
+                                    <li>Processing: 10ms</li>
+                                    <li><strong>Total: 80ms per request</strong></li>
+                                </ul>
+                                <p>With 10,000 concurrent users, your database is overwhelmed and response times climb to 2+ seconds.</p>
+                            </div>
+
+                            <div class="concept-section">
+                                <h3>How Caching Helps</h3>
+                                <p>Cache the product data in memory:</p>
+                                <ul>
+                                    <li>Cache hit: 2ms (super fast!)</li>
+                                    <li>Cache miss: 80ms (original speed)</li>
+                                    <li>With 90% hit rate: Average response = (0.9 × 2ms) + (0.1 × 80ms) = 9.8ms</li>
+                                </ul>
+                                <p><strong>Result:</strong> 8x faster responses + dramatically reduced database load</p>
+                            </div>
+
+                            <div class="exercise">
+                                <h3>🧠 When to Cache?</h3>
+                                <p><strong>Scenario A:</strong> User profile data (changes rarely, read frequently)</p>
+                                <p><strong>Scenario B:</strong> Real-time stock prices (changes constantly)</p>
+                                <p><strong>Scenario C:</strong> Blog post content (rarely changes, read by many)</p>
+                                <p><strong>Question:</strong> Which scenarios would benefit most from caching? Why?</p>
+                            </div>
+                        `
+                    },
+                    {
+                        id: 2,
+                        title: "Cache-Aside Pattern Implementation",
+                        duration: 12,
+                        goals: [
+                            "Master the most common caching pattern",
+                            "Understand cache-aside implementation details",
+                            "Learn when cache-aside is the right choice"
+                        ],
+                        content: `
+                            <div class="concept-section">
+                                <h3>How Cache-Aside Works</h3>
+                                <p>Cache-aside puts the application in control of both cache and database.</p>
+                                
+                                <p><strong>Read Flow:</strong></p>
+                                <ol>
+                                    <li>Check cache for data</li>
+                                    <li>If cache hit: return data</li>
+                                    <li>If cache miss: query database, store in cache, return data</li>
+                                </ol>
+                            </div>
+
+                            <div class="exercise">
+                                <h3>🛠️ Design Challenge</h3>
+                                <p>Design cache-aside for a news website where articles are read 1000x more than updated.</p>
+                                <p>Consider: cache keys, TTL, update handling</p>
+                            </div>
+                        `
+                    },
+                    {
+                        id: 3,
+                        title: "Write-Through vs Write-Behind",
+                        duration: 14,
+                        goals: [
+                            "Compare write-through and write-behind patterns",
+                            "Understand consistency vs performance trade-offs"
+                        ],
+                        content: `
+                            <div class="concept-section">
+                                <h3>Write-Through Pattern</h3>
+                                <p>Every write goes to both cache and database simultaneously.</p>
+                                <p><strong>Benefit:</strong> Strong consistency</p>
+                                <p><strong>Cost:</strong> Slower writes</p>
+                            </div>
+
+                            <div class="concept-section">
+                                <h3>Write-Behind Pattern</h3>
+                                <p>Writes go to cache immediately, database updated later.</p>
+                                <p><strong>Benefit:</strong> Fast writes</p>
+                                <p><strong>Risk:</strong> Potential data loss</p>
+                            </div>
+                        `
+                    },
+                    {
+                        id: 4,
+                        title: "Distributed Caching",
+                        duration: 15,
+                        goals: [
+                            "Understand distributed caching architectures",
+                            "Master cache invalidation strategies"
+                        ],
+                        content: `
+                            <div class="concept-section">
+                                <h3>Why Distributed Caching?</h3>
+                                <p>Single cache limitations: memory limits, single point of failure, network bottleneck.</p>
+                                <p><strong>Solution:</strong> Distribute cache across multiple nodes.</p>
+                            </div>
+
+                            <div class="concept-section">
+                                <h3>🎉 Caching Mastery Complete!</h3>
+                                <p>You now understand the complete caching toolkit!</p>
+                            </div>
+                        `
+                    }
+                ]
+            }
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAvailableJourneys();
+        });
+
+        function loadAvailableJourneys() {
+            try {
+                availableJourneys = contentSources;
+                renderJourneySelector();
+            } catch (error) {
+                document.getElementById('journey-selector').innerHTML = `
+                    <div class="error">Error loading journeys: ${error.message}</div>
+                `;
+            }
+        }
+
+        function renderJourneySelector() {
+            const selector = document.getElementById('journey-selector');
+            const journeyOptions = Object.keys(availableJourneys).map(journeyId => {
+                const journey = availableJourneys[journeyId];
+                const className = journey.available ? 'journey-option' : 'journey-option unavailable';
+                const emoji = getJourneyEmoji(journeyId);
+                
+                return `
+                    <div class="${className}" data-journey="${journeyId}">
+                        ${emoji} ${journey.title} (${journey.description})
+                    </div>
+                `;
+            }).join('');
+
+            selector.innerHTML = journeyOptions;
+
+            // Add click handlers
+            document.querySelectorAll('.journey-option').forEach(option => {
+                if (!option.classList.contains('unavailable')) {
+                    option.addEventListener('click', function() {
+                        document.querySelectorAll('.journey-option').forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+                        currentJourneyId = this.getAttribute('data-journey');
+                        currentLessonId = 1;
+                    });
+                }
+            });
+
+            // Select first available journey by default
+            const firstAvailable = Object.keys(availableJourneys).find(id => availableJourneys[id].available);
+            if (firstAvailable) {
+                currentJourneyId = firstAvailable;
+                document.querySelector(`[data-journey="${firstAvailable}"]`).classList.add('selected');
+            }
+        }
+
+        function getJourneyEmoji(journeyId) {
+            const emojiMap = {
+                'database-sharding': '📊',
+                'caching-strategies': '⚡'
+            };
+            return emojiMap[journeyId] || '📚';
+        }
+
+        function startJourney() {
+            if (!currentJourneyId || !availableJourneys[currentJourneyId] || !availableJourneys[currentJourneyId].available) {
+                alert('Please select an available journey first!');
+                return;
+            }
+            
+            document.getElementById('content').classList.remove('hidden');
+            showLesson();
+        }
+
+        function showLesson() {
+            const journey = availableJourneys[currentJourneyId];
+            const lesson = journey.lessons.find(l => l.id === currentLessonId);
+            
+            if (!lesson) {
+                document.getElementById('content').innerHTML = `
+                    <div class="lesson-container">
+                        <div class="error">Lesson ${currentLessonId} not found!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const progressDots = Array.from({length: journey.totalLessons}, (_, i) => {
+                const lessonNum = i + 1;
+                let className = 'progress-dot';
+                if (lessonNum < currentLessonId) className += ' completed';
+                if (lessonNum === currentLessonId) className += ' current';
+                return `<span class="${className}"></span>`;
+            }).join('');
+
+            const goalsHtml = lesson.goals.map(goal => `<li>${goal}</li>`).join('');
+
+            document.getElementById('content').innerHTML = `
+                <div class="lesson-container">
+                    <div class="lesson-header">
+                        <h2>${lesson.title}</h2>
+                        <div class="progress">
+                            Progress: ${progressDots} (Lesson ${currentLessonId} of ${journey.totalLessons})
+                        </div>
+                        <p><strong>Duration:</strong> ~${lesson.duration} minutes</p>
+                    </div>
+
+                    <div class="learning-goals">
+                        <h3>🎯 What You'll Learn:</h3>
+                        <ul>${goalsHtml}</ul>
+                    </div>
+
+                    ${lesson.content}
+
+                    <div class="navigation">
+                        <button class="nav-btn" onclick="previousLesson()" ${currentLessonId === 1 ? 'disabled' : ''}>
+                            ← Previous
+                        </button>
+                        <span>Lesson ${currentLessonId} of ${journey.totalLessons}</span>
+                        <button class="nav-btn" onclick="nextLesson()" ${currentLessonId >= journey.totalLessons ? 'disabled' : ''}>
+                            Next →
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function nextLesson() {
+            const journey = availableJourneys[currentJourneyId];
+            if (currentLessonId < journey.totalLessons) {
+                currentLessonId++;
+                showLesson();
+            }
+        }
+
+        function previousLesson() {
+            if (currentLessonId > 1) {
+                currentLessonId--;
+                showLesson();
+            }
+        }
+    </script>
+</body>
+</html>
