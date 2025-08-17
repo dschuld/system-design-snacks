@@ -1,6 +1,5 @@
-// Caching Strategies Journey Data
-window.journeyData = window.journeyData || {};
-window.journeyData['caching-strategies'] = {
+{
+  "id": "caching-strategies",
   "title": "Caching Strategies Deep Dive",
   "description": "4 lessons, ~12 min each",
   "totalLessons": 4,
@@ -49,4 +48,4 @@ window.journeyData['caching-strategies'] = {
       "content": "<div class=\"concept-section\">\n<h3>Why Distributed Caching?</h3>\n<p>Single cache limitations: memory limits, single point of failure, network bottleneck.</p>\n<p><strong>Solution:</strong> Distribute cache across multiple nodes.</p>\n</div>\n\n<div class=\"concept-section\">\n<h3>🎉 Caching Mastery Complete!</h3>\n<p>You now understand the complete caching toolkit!</p>\n</div>"
     }
   ]
-};
+}

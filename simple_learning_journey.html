@@ -152,7 +152,7 @@
         let currentJourneyId = null;
         let currentLessonId = 1;
 
-        // Function to dynamically load all journey scripts from registry
+        // Function to dynamically load all journey JSON files from registry
         async function loadJourneyScripts() {
             // Get the list of journey files from the registry
             const journeyFiles = window.journeyRegistry || [];
@@ -162,20 +162,26 @@
                 return;
             }
 
-            const loadPromises = journeyFiles.map(filename => {
-                return new Promise((resolve) => {
-                    const script = document.createElement('script');
-                    script.src = `journeys/${filename}`;
-                    script.onload = () => {
-                        console.log(`Successfully loaded: ${filename}`);
-                        resolve();
-                    };
-                    script.onerror = () => {
-                        console.error(`Failed to load journey file: ${filename}`);
-                        resolve(); // Resolve anyway to not block other files
-                    };
-                    document.head.appendChild(script);
-                });
+            // Initialize journey data object
+            window.journeyData = window.journeyData || {};
+
+            const loadPromises = journeyFiles.map(async (filename) => {
+                try {
+                    const response = await fetch(`journeys/${filename}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
+                    const journeyData = await response.json();
+                    const journeyId = journeyData.id;
+                    
+                    // Store the journey data using its ID as the key
+                    window.journeyData[journeyId] = journeyData;
+                    
+                    console.log(`Successfully loaded: ${filename} (${journeyId})`);
+                } catch (error) {
+                    console.error(`Failed to load journey file: ${filename}`, error);
+                }
             });
 
             await Promise.all(loadPromises);
@@ -183,7 +189,7 @@
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', async function() {
-            // Load all journey scripts dynamically
+            // Load all journey JSON files dynamically
             await loadJourneyScripts();
             
             // Use the externally loaded journey data
