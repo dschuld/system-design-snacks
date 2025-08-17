@@ -143,9 +143,8 @@
         <!-- Lesson content will be populated here -->
     </div>
 
-    <!-- Load journey data via script tags to avoid CORS issues -->
-    <script src="journeys/database-sharding.js"></script>
-    <script src="journeys/caching-strategies.js"></script>
+    <!-- Load journey registry first -->
+    <script src="journeys/registry.js"></script>
 
     <script>
         // Global state
@@ -153,8 +152,40 @@
         let currentJourneyId = null;
         let currentLessonId = 1;
 
+        // Function to dynamically load all journey scripts from registry
+        async function loadJourneyScripts() {
+            // Get the list of journey files from the registry
+            const journeyFiles = window.journeyRegistry || [];
+            
+            if (journeyFiles.length === 0) {
+                console.warn('No journey files found in registry');
+                return;
+            }
+
+            const loadPromises = journeyFiles.map(filename => {
+                return new Promise((resolve) => {
+                    const script = document.createElement('script');
+                    script.src = `journeys/${filename}`;
+                    script.onload = () => {
+                        console.log(`Successfully loaded: ${filename}`);
+                        resolve();
+                    };
+                    script.onerror = () => {
+                        console.error(`Failed to load journey file: ${filename}`);
+                        resolve(); // Resolve anyway to not block other files
+                    };
+                    document.head.appendChild(script);
+                });
+            });
+
+            await Promise.all(loadPromises);
+        }
+
         // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load all journey scripts dynamically
+            await loadJourneyScripts();
+            
             // Use the externally loaded journey data
             availableJourneys = window.journeyData || {};
             renderJourneySelector();
@@ -199,7 +230,8 @@
         function getJourneyEmoji(journeyId) {
             const emojiMap = {
                 'database-sharding': '📊',
-                'caching-strategies': '⚡'
+                'caching-strategies': '⚡',
+                'idempotency-in-distributed-systems': '🔄'
             };
             return emojiMap[journeyId] || '📚';
         }

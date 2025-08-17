@@ -1,0 +1,51 @@
+// Idempotency in Distributed Systems Journey Data
+window.journeyData = window.journeyData || {};
+window.journeyData['idempotency-in-distributed-systems'] = {
+    "title": "Idempotency in Distributed Systems",
+    "description": "4 lessons, ~12 min each",
+    "totalLessons": 4,
+    "available": true,
+    "lessons": [
+      {
+        "id": 1,
+        "title": "Why Do We Need Idempotency?",
+        "goals": [
+          "Understand the definition of idempotency in distributed systems",
+          "Recognize real-world scenarios where retries cause duplicate side effects",
+          "Identify why retries are inevitable in distributed environments"
+        ],
+        "content": "<div class=\"concept-section\"><h3>What is Idempotency?</h3><p>Idempotency means that performing an operation once or multiple times results in the same outcome. In distributed systems, retries are common due to network failures, client crashes, or timeouts. Without idempotency, retries can cause duplicate side effects, such as double-charging a credit card.</p></div><div class=\"concept-section\"><h3>Real-World Examples</h3><ul><li>✅ Payment APIs: Avoid charging a customer multiple times</li><li>✅ Social media: Prevent duplicate posts when a user retries</li><li>❌ Without idempotency: retries create inconsistent or incorrect states</li></ul></div><div class=\"exercise\"><h3>🛠️ Spot the Risk</h3><p><strong>Scenario:</strong> A user submits a payment, but their client crashes. They retry after restart.</p><p><strong>Your task:</strong> Describe what could happen if the API is not idempotent.</p><p><strong>Consider:</strong> What side effects would the user see?</p></div>"
+      },
+      {
+        "id": 2,
+        "title": "Where Does Idempotency Responsibility Live?",
+        "goals": [
+          "Understand client and server responsibilities in idempotency",
+          "Learn why the server is the main enforcer of idempotency",
+          "Identify how clients can assist with idempotency keys"
+        ],
+        "content": "<div class=\"concept-section\"><h3>Client vs Server Responsibility</h3><p>The <strong>server</strong> must ensure that duplicate requests do not produce duplicate side effects. The <strong>client</strong> can help by providing a stable identifier, like an Idempotency-Key, for the server to match retries against.</p></div><div class=\"concept-section\"><h3>Shared Responsibility Model</h3><ul><li>✅ Server enforces correctness</li><li>✅ Client provides identity for retries</li><li>❌ If client does not provide identifiers, deduplication is harder</li></ul></div><div class=\"exercise\"><h3>🛠️ Client or Server?</h3><p><strong>Scenario:</strong> A client retries a post submission with no unique identifier.</p><p><strong>Your task:</strong> Explain why the server still must protect against duplicates, and how it might do so.</p></div>"
+      },
+      {
+        "id": 3,
+        "title": "Implementation Strategies for Idempotency",
+        "goals": [
+          "Learn common implementation patterns for idempotency",
+          "Understand how to use explicit keys, resource IDs, or uniqueness constraints",
+          "Recognize the role of storage in replaying results"
+        ],
+        "content": "<div class=\"concept-section\"><h3>Common Strategies</h3><ul><li><strong>Idempotency-Key:</strong> Store key → response mapping, replay on retry</li><li><strong>Resource ID Upsert:</strong> Use PUT with deterministic IDs</li><li><strong>DB Uniqueness:</strong> Enforce unique constraints (e.g., user_id + external_ref)</li></ul></div><div class=\"concept-section\"><h3>Storage Design</h3><p>Idempotency often requires persisting request identity and results so the server can replay the response rather than re-executing side effects.</p></div><div class=\"exercise\"><h3>🛠️ Design Choice</h3><p><strong>Scenario:</strong> You are designing a CreatePayment API.</p><p><strong>Your task:</strong> Choose between PUT /payments/{id} and POST /payments with an Idempotency-Key. Justify your choice.</p></div>"
+      },
+      {
+        "id": 4,
+        "title": "Handling Edge Cases and Expiry",
+        "goals": [
+          "Understand the role of short-term locks vs long-term expiry",
+          "Identify how to handle partial failures and lost responses",
+          "Choose an appropriate expiry policy for idempotency records"
+        ],
+        "content": "<div class=\"concept-section\"><h3>Locks vs Expiry</h3><ul><li><strong>locked_until:</strong> Short-lived, prevents two workers from processing the same request at once</li><li><strong>expires_at:</strong> Longer-term, defines how long the system remembers idempotency keys</li></ul></div><div class=\"concept-section\"><h3>Expiry Trade-offs</h3><ul><li>✅ Longer expiry = safer against late retries</li><li>❌ Longer expiry = more storage cost</li></ul></div><div class=\"exercise\"><h3>🛠️ Set the Policy</h3><p><strong>Scenario:</strong> Your system handles global payments, and clients may retry a day later.</p><p><strong>Your task:</strong> Propose a TTL (24h, 48h, 72h?) for idempotency keys and justify based on user experience, storage, and reliability.</p></div><div class=\"concept-section\"><h3>🎉 Idempotency in Distributed Systems Complete!</h3><p>You've now mastered:</p><ul><li>✅ Why retries require idempotency</li><li>✅ Client vs server responsibility</li><li>✅ Implementation strategies</li><li>✅ Locks and expiry policies</li></ul><p><strong>Next steps:</strong> Try applying idempotency patterns to messaging systems or multi-service workflows.</p></div>"
+      }
+    ]
+  };
+
