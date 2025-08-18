@@ -1,0 +1,58 @@
+{
+  "id": "database-sharding-gpt",
+  "title": "Database Sharding by GPT",
+  "totalLessons": 5,
+  "available": true,
+  "lessons": [
+    {
+      "id": 1,
+      "title": "Why Do We Need Database Sharding?",
+      "goals": [
+        "Explain the limitations of single-node databases at scale",
+        "Understand when vertical scaling becomes insufficient",
+        "Identify real-world scenarios where sharding becomes necessary"
+      ],
+      "content": "<div class=\"concept-section\">\n  <h3>Scaling Databases Beyond a Single Node</h3>\n  <p>As applications grow, a single database server may struggle with performance and storage. Vertical scaling (adding CPU/RAM/SSD) only works up to hardware limits. At global scale, you need <strong>horizontal scaling</strong>, where data is distributed across multiple servers. This is where <em>sharding</em> comes in.</p>\n  <ul>\n    <li>✅ Sharding splits data across multiple machines to handle massive workloads</li>\n    <li>❌ Without sharding, high-traffic apps face slow queries and storage bottlenecks</li>\n  </ul>\n</div>\n<div class=\"concept-section\">\n  <h3>Real-World Motivation</h3>\n  <ul>\n    <li>Social networks storing billions of user posts</li>\n    <li>E-commerce platforms handling millions of orders daily</li>\n    <li>IoT systems generating terabytes of time-series data</li>\n  </ul>\n</div>\n<div class=\"exercise\">\n  <h3>🛠️ Spot the Bottleneck</h3>\n  <p><strong>Scenario:</strong> You run a social media app where each user has thousands of posts. Your single Postgres instance has reached its I/O limits.</p>\n  <p><strong>Your task:</strong> List three reasons why scaling up the single machine won’t solve the problem long-term, and explain how sharding could help.</p>\n</div>"
+    },
+    {
+      "id": 2,
+      "title": "How Does Sharding Work?",
+      "goals": [
+        "Understand the basic principle of dividing data across shards",
+        "Learn common sharding keys and their impact",
+        "Recognize trade-offs between different sharding strategies"
+      ],
+      "content": "<div class=\"concept-section\">\n  <h3>Breaking Data into Shards</h3>\n  <p>Sharding splits data horizontally by rows, not columns. Each shard holds a subset of the rows, usually determined by a <em>shard key</em>. Choosing the right key is critical—poor choices can cause hotspots and uneven load.</p>\n</div>\n<div class=\"concept-section\">\n  <h3>Sharding Key Examples</h3>\n  <ul>\n    <li><strong>User ID:</strong> Distributes user data evenly in social apps</li>\n    <li><strong>Geography:</strong> Keeps related data close, e.g. regional e-commerce</li>\n    <li><strong>Time:</strong> Useful for logs or analytics, but may cause hotspots at peak times</li>\n  </ul>\n</div>\n<div class=\"exercise\">\n  <h3>🛠️ Choose the Shard Key</h3>\n  <p><strong>Scenario:</strong> You design a ride-hailing app where queries often fetch data by user. </p>\n  <p><strong>Your task:</strong> Which shard key makes sense—user ID, city, or timestamp? Explain your choice and one potential downside.</p>\n</div>"
+    },
+    {
+      "id": 3,
+      "title": "Advanced Sharding Strategies",
+      "goals": [
+        "Differentiate between range-based, hash-based, and directory-based sharding",
+        "Compare advantages and disadvantages of each",
+        "Identify when to use hybrid sharding approaches"
+      ],
+      "content": "<div class=\"concept-section\">\n  <h3>Common Sharding Approaches</h3>\n  <div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 20px 0;\">\n    <div style=\"background: #e8f5e8; padding: 20px; border-radius: 10px;\">\n      <h4>Range-Based</h4>\n      <ul>\n        <li>✅ Good for sequential data (e.g. dates)</li>\n        <li>❌ Risk of hotspots when new data clusters in one range</li>\n      </ul>\n    </div>\n    <div style=\"background: #e3f2fd; padding: 20px; border-radius: 10px;\">\n      <h4>Hash-Based</h4>\n      <ul>\n        <li>✅ Distributes data evenly</li>\n        <li>❌ Makes range queries expensive</li>\n      </ul>\n    </div>\n    <div style=\"background: #fff3e0; padding: 20px; border-radius: 10px;\">\n      <h4>Directory-Based</h4>\n      <ul>\n        <li>✅ Flexible, metadata maps keys to shards</li>\n        <li>❌ Metadata service can be a bottleneck</li>\n      </ul>\n    </div>\n  </div>\n</div>\n<div class=\"exercise\">\n  <h3>🛠️ Match the Strategy</h3>\n  <p><strong>Scenario:</strong> You run an analytics system where queries often request all data from a specific time range.</p>\n  <p><strong>Your task:</strong> Which sharding strategy fits best and why? What trade-offs do you accept?</p>\n</div>"
+    },
+    {
+      "id": 4,
+      "title": "When to Use Each Sharding Approach",
+      "goals": [
+        "Understand decision factors for selecting sharding strategies",
+        "Evaluate trade-offs in query patterns, workload, and growth",
+        "Apply decision frameworks to real-world scenarios"
+      ],
+      "content": "<div class=\"concept-section\">\n  <h3>Decision Factors</h3>\n  <ul>\n    <li>Query patterns: Do you often query by ID, range, or geography?</li>\n    <li>Growth patterns: Will data grow evenly or in bursts?</li>\n    <li>Operational complexity: Can your team handle metadata services?</li>\n  </ul>\n</div>\n<div class=\"concept-section\">\n  <h3>Practical Guidelines</h3>\n  <ul>\n    <li>Use hash-based sharding for even distribution across large user bases</li>\n    <li>Use range-based sharding for time-series analytics</li>\n    <li>Use directory-based when flexibility is critical</li>\n  </ul>\n</div>\n<div class=\"exercise\">\n  <h3>🛠️ Apply the Framework</h3>\n  <p><strong>Scenario:</strong> You are building a multi-region e-commerce platform. Customers mostly query by region, but also need to see historical purchase data.</p>\n  <p><strong>Your task:</strong> Propose a hybrid sharding strategy and explain how it balances query performance and scalability.</p>\n</div>"
+    },
+    {
+      "id": 5,
+      "title": "Case Studies: Sharding in the Real World",
+      "goals": [
+        "Learn how large companies implement sharding",
+        "Compare real-world strategies in social, e-commerce, and logging systems",
+        "Identify key lessons from industry practices"
+      ],
+      "content": "<div class=\"concept-section\">\n  <h3>Industry Examples</h3>\n  <ul>\n    <li><strong>Facebook:</strong> Uses user ID hash sharding to distribute social graph data across thousands of servers.</li>\n    <li><strong>Amazon:</strong> E-commerce system shards customer/order data by region and customer ID.</li>\n    <li><strong>ElasticSearch:</strong> Built-in sharding of indices for large-scale search and logging.</li>\n  </ul>\n</div>\n<div class=\"concept-section\">\n  <h3>Lessons Learned</h3>\n  <ul>\n    <li>Carefully chosen shard keys prevent hotspots</li>\n    <li>Resharding is complex and costly—plan ahead</li>\n    <li>Monitoring and balancing shards is ongoing work</li>\n  </ul>\n</div>\n<div class=\"exercise\">\n  <h3>🛠️ Design Like the Pros</h3>\n  <p><strong>Scenario:</strong> Your startup is building a video-sharing platform expecting 50M daily active users within 3 years.</p>\n  <p><strong>Your task:</strong> Based on the case studies, propose a shard key and explain how you would prepare for future resharding needs.</p>\n</div>\n<div class=\"concept-section\">\n  <h3>🎉 Database Sharding Journey Complete!</h3>\n  <p>You've now mastered:</p>\n  <ul>\n    <li>✅ Why databases need sharding</li>\n    <li>✅ Core sharding mechanics and keys</li>\n    <li>✅ Range, hash, and directory strategies</li>\n    <li>✅ Decision frameworks for choosing strategies</li>\n    <li>✅ Real-world industry case studies</li>\n  </ul>\n  <p><strong>Next steps:</strong> Explore resharding techniques, multi-tenant databases, and distributed transaction handling.</p>\n</div>"
+    }
+  ]
+}
