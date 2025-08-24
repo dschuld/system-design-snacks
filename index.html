@@ -303,6 +303,7 @@
                     </div>
                 </div>
             `;
+
         }
 
         function nextLesson() {
@@ -318,6 +319,107 @@
                 currentLessonId--;
                 showLesson();
             }
+        }
+
+        // Quiz functions for lesson 6
+        function revealAnswers() {
+            let totalQuestions = 8;
+            let correctAnswers = 0;
+            let totalPossiblePoints = 0;
+            let earnedPoints = 0;
+            
+            for (let q = 1; q <= totalQuestions; q++) {
+                let questionInputs = document.querySelectorAll(`input[data-question="${q}"]`);
+                let questionCorrect = true;
+                let questionPoints = 0;
+                let maxQuestionPoints = 0;
+                
+                questionInputs.forEach(input => {
+                    let isCorrect = input.dataset.correct === 'true';
+                    let isChecked = input.checked;
+                    
+                    if (isCorrect) maxQuestionPoints++;
+                    
+                    if (isCorrect && isChecked) {
+                        // Correct answer selected
+                        input.parentElement.style.background = '#d4edda';
+                        input.parentElement.style.color = '#155724';
+                        input.parentElement.innerHTML += ' ✅';
+                        questionPoints++;
+                    } else if (isCorrect && !isChecked) {
+                        // Correct answer not selected
+                        input.parentElement.style.background = '#fff3cd';
+                        input.parentElement.style.color = '#856404';
+                        input.parentElement.innerHTML += ' ✅ (missed)';
+                        questionCorrect = false;
+                    } else if (!isCorrect && isChecked) {
+                        // Incorrect answer selected
+                        input.parentElement.style.background = '#f8d7da';
+                        input.parentElement.style.color = '#721c24';
+                        input.parentElement.innerHTML += ' ❌';
+                        questionCorrect = false;
+                    } else {
+                        // Incorrect answer not selected (good)
+                        input.parentElement.style.color = '#6c757d';
+                    }
+                    
+                    input.disabled = true;
+                });
+                
+                totalPossiblePoints += maxQuestionPoints;
+                earnedPoints += questionPoints;
+                
+                if (questionCorrect) correctAnswers++;
+            }
+            
+            // Calculate scores
+            let percentageScore = Math.round((earnedPoints / totalPossiblePoints) * 100);
+            let perfectQuestions = correctAnswers;
+            
+            // Show results
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('score-display').innerHTML = `
+                <h4>Score: ${earnedPoints}/${totalPossiblePoints} points (${percentageScore}%)</h4>
+                <p>Perfect questions: ${perfectQuestions}/${totalQuestions}</p>
+            `;
+            
+            // Provide feedback
+            let feedback = '';
+            if (percentageScore >= 90) {
+                feedback = '🎉 <strong>Excellent!</strong> You have mastered database sharding concepts. You\'re ready to design and implement sharding strategies in real-world systems.';
+            } else if (percentageScore >= 75) {
+                feedback = '👍 <strong>Great job!</strong> You have a solid understanding of database sharding. Review the areas you missed and you\'ll be ready for complex implementations.';
+            } else if (percentageScore >= 60) {
+                feedback = '📚 <strong>Good progress!</strong> You understand the fundamentals but should review the lessons focusing on the questions you missed.';
+            } else {
+                feedback = '🔄 <strong>Keep learning!</strong> Consider reviewing the lessons again, especially focusing on the practical examples and case studies.';
+            }
+            
+            document.getElementById('feedback').innerHTML = feedback;
+            document.getElementById('revealBtn').style.display = 'none';
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function retakeQuiz() {
+            // Reset all inputs and styling
+            let allInputs = document.querySelectorAll('input[type="checkbox"]');
+            allInputs.forEach(input => {
+                input.checked = false;
+                input.disabled = false;
+                input.parentElement.style.background = '';
+                input.parentElement.style.color = '';
+                // Remove checkmarks and x marks
+                input.parentElement.innerHTML = input.parentElement.innerHTML.replace(/ ✅| ✅ \(missed\)| ❌/g, '');
+            });
+            
+            // Hide results and show reveal button
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('revealBtn').style.display = 'inline-block';
+            
+            // Scroll back to top of quiz
+            document.querySelector('.quiz-container').scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>
