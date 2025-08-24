@@ -4,4 +4,5 @@ window.journeyRegistry = [
     'database-sharding.json',
     'caching-strategies.json',
     'idempotency-snacks.json',
+    'event-driven-arch.json',
 ];
