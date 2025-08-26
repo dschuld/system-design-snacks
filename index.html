@@ -127,6 +127,20 @@
             border-radius: 5px;
             margin: 15px 0;
         }
+        .claude-exercise-btn {
+            background: #6f42c1;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+            display: none;
+        }
+        .claude-exercise-btn:hover {
+            background: #5a359a;
+        }
     </style>
 </head>
 <body>
@@ -299,10 +313,15 @@
                         <button class="nav-btn" onclick="nextLesson()" ${currentLessonId >= journey.totalLessons ? 'disabled' : ''}>
                             Next →
                         </button>
+                        <button id="claude-exercise-btn" class="claude-exercise-btn" onclick="openExerciseInClaude()">
+                            💬 Discuss Exercise with Claude
+                        </button>
                     </div>
                 </div>
             `;
 
+            // Check if lesson has exercise and show/hide Claude button
+            updateClaudeExerciseButton();
         }
 
         function nextLesson() {
@@ -317,6 +336,82 @@
             if (currentLessonId > 1) {
                 currentLessonId--;
                 showLesson();
+            }
+        }
+
+        function updateClaudeExerciseButton() {
+            const exerciseDiv = document.querySelector('.exercise');
+            const claudeButton = document.getElementById('claude-exercise-btn');
+            
+            if (exerciseDiv && claudeButton) {
+                claudeButton.style.display = 'inline-block';
+            } else if (claudeButton) {
+                claudeButton.style.display = 'none';
+            }
+        }
+
+        function extractExerciseText(element) {
+            // Create a temporary element to work with
+            const temp = element.cloneNode(true);
+            
+            // Remove any HTML tags and get clean text
+            function getTextContent(node) {
+                let text = '';
+                
+                if (node.nodeType === Node.TEXT_NODE) {
+                    return node.textContent;
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    // Add spacing for block elements
+                    if (['DIV', 'P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI', 'BR'].includes(node.tagName)) {
+                        text += '\n';
+                    }
+                    
+                    for (let child of node.childNodes) {
+                        text += getTextContent(child);
+                    }
+                    
+                    // Add spacing after block elements
+                    if (['DIV', 'P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI'].includes(node.tagName)) {
+                        text += '\n';
+                    }
+                }
+                
+                return text;
+            }
+            
+            return getTextContent(temp)
+                .replace(/\n{3,}/g, '\n\n')  // Reduce multiple newlines
+                .trim();
+        }
+
+        function openExerciseInClaude() {
+            const exerciseDiv = document.querySelector('.exercise');
+            
+            if (!exerciseDiv) {
+                alert('No exercise found in this lesson.');
+                return;
+            }
+            
+            try {
+                const exerciseText = extractExerciseText(exerciseDiv);
+                
+                if (!exerciseText.trim()) {
+                    alert('Could not extract exercise text.');
+                    return;
+                }
+                
+                // URL encode the exercise text
+                const encodedText = encodeURIComponent(exerciseText);
+                
+                // Create Claude URL
+                const claudeUrl = `https://claude.ai/new?q=${encodedText}`;
+                
+                // Open in new tab
+                window.open(claudeUrl, '_blank');
+                
+            } catch (error) {
+                console.error('Error opening exercise in Claude:', error);
+                alert('Error opening exercise in Claude. Please try again.');
             }
         }
 
