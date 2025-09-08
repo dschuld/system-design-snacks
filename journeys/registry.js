@@ -6,4 +6,5 @@ window.journeyRegistry = [
     'idempotency-snacks.json',
     'event-driven-arch.json',
     'microservices-patterns.json',
+    'data-architecture.json'
 ];
