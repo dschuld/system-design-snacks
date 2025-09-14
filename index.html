@@ -105,6 +105,7 @@
             padding: 15px;
             margin: 15px 0;
             border-radius: 5px;
+            position: relative;
         }
         .exercise {
             background: #fff3cd;
@@ -139,6 +140,26 @@
             display: none;
         }
         .claude-exercise-btn:hover {
+            background: #5a359a;
+        }
+        .claude-section-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #6f42c1;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .claude-section-btn:hover {
             background: #5a359a;
         }
     </style>
@@ -322,6 +343,9 @@
 
             // Check if lesson has exercise and show/hide Claude button
             updateClaudeExerciseButton();
+            
+            // Add question mark buttons to concept sections
+            addConceptSectionButtons();
         }
 
         function nextLesson() {
@@ -412,6 +436,56 @@
             } catch (error) {
                 console.error('Error opening exercise in Claude:', error);
                 alert('Error opening exercise in Claude. Please try again.');
+            }
+        }
+
+        function addConceptSectionButtons() {
+            const conceptSections = document.querySelectorAll('.concept-section');
+            
+            conceptSections.forEach((section, index) => {
+                // Check if button already exists to avoid duplicates
+                if (!section.querySelector('.claude-section-btn')) {
+                    const button = document.createElement('button');
+                    button.className = 'claude-section-btn';
+                    button.innerHTML = '?';
+                    button.title = 'Discuss this section with Claude';
+                    button.onclick = () => openSectionInClaude(section, index);
+                    section.appendChild(button);
+                }
+            });
+        }
+
+        function openSectionInClaude(sectionElement, sectionIndex) {
+            try {
+                // Get the current lesson title for context
+                const journey = availableJourneys[currentJourneyId];
+                const lesson = journey.lessons.find(l => l.id === currentLessonId);
+                const lessonTitle = lesson ? lesson.title : 'Unknown Lesson';
+                
+                // Extract text content from the section
+                const sectionText = extractExerciseText(sectionElement);
+                
+                if (!sectionText.trim()) {
+                    alert('Could not extract section text.');
+                    return;
+                }
+                
+                // Create the prefix text with lesson topic
+                const prefixText = `The following text is a part of study material on the topic "${lessonTitle}".\n\n`;
+                const fullText = prefixText + "```" + sectionText + "```";
+                
+                // URL encode the text
+                const encodedText = encodeURIComponent(fullText);
+                
+                // Create Claude URL
+                const claudeUrl = `https://claude.ai/new?q=${encodedText}`;
+                
+                // Open in new tab
+                window.open(claudeUrl, '_blank');
+                
+            } catch (error) {
+                console.error('Error opening section in Claude:', error);
+                alert('Error opening section in Claude. Please try again.');
             }
         }
 
