@@ -241,7 +241,7 @@
                 
                 return `
                     <div class="${className}" data-journey="${journeyId}">
-                        ${emoji} ${journey.title} (${journey.description})
+                        ${emoji} ${journey.title}
                     </div>
                 `;
             }).join('');
@@ -269,12 +269,7 @@
         }
 
         function getJourneyEmoji(journeyId) {
-            const emojiMap = {
-                'database-sharding': '📊',
-                'caching-strategies': '⚡',
-                'idempotency-in-distributed-systems': '🔄'
-            };
-            return emojiMap[journeyId] || '📚';
+            return '📚';
         }
 
         function startJourney() {
