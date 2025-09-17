@@ -234,8 +234,17 @@
 
         function renderJourneySelector() {
             const selector = document.getElementById('journey-selector');
-            const journeyOptions = Object.keys(availableJourneys).map(journeyId => {
+            
+            // Get registry order and create journey options in that order
+            const registryFiles = window.journeyRegistry || [];
+            const journeyOptions = registryFiles.map(filename => {
+                // Extract journey ID from filename (remove .json extension)
+                const journeyId = filename.replace('.json', '');
                 const journey = availableJourneys[journeyId];
+                
+                // Skip if journey data not loaded
+                if (!journey) return '';
+                
                 const className = journey.available ? 'journey-option' : 'journey-option unavailable';
                 const emoji = getJourneyEmoji(journeyId);
                 
@@ -244,7 +253,7 @@
                         ${emoji} ${journey.title}
                     </div>
                 `;
-            }).join('');
+            }).filter(option => option !== '').join('');
 
             selector.innerHTML = journeyOptions;
 
@@ -260,8 +269,12 @@
                 }
             });
 
-            // Select first available journey by default
-            const firstAvailable = Object.keys(availableJourneys).find(id => availableJourneys[id].available);
+            // Select first available journey by default (in registry order)
+            const registryFileList = window.journeyRegistry || [];
+            const firstAvailable = registryFileList
+                .map(filename => filename.replace('.json', ''))
+                .find(journeyId => availableJourneys[journeyId] && availableJourneys[journeyId].available);
+            
             if (firstAvailable) {
                 currentJourneyId = firstAvailable;
                 document.querySelector(`[data-journey="${firstAvailable}"]`).classList.add('selected');
