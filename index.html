@@ -343,7 +343,7 @@
                             Next →
                         </button>
                         <button id="claude-exercise-btn" class="claude-exercise-btn" onclick="openExerciseInClaude()">
-                            💬 Discuss Exercise with Claude
+                            💬 Discuss Own Solution with Claude
                         </button>
                     </div>
                 </div>
@@ -475,7 +475,7 @@
                     contextMessage += previousLessonContext;
                 }
 
-                contextMessage += `\n\n--- EXERCISE FOR DISCUSSION ---\n${exerciseText}\n\nPlease help me discuss this exercise, focusing mostly on the lesson content above, though feel free to bring in related concepts as well.`;
+                contextMessage += `\n\n--- EXERCISE FOR DISCUSSION ---\n${exerciseText}\n--- EXERCISE FOR DISCUSSION END ---\n==============\nThis is an answer to this exercise in System Design. Review it and provide feedback. Focus mostly on the points that were learning in this lesson, taking into account the content from the previous lessons:`;
 
                 // URL encode the full message
                 const encodedText = encodeURIComponent(contextMessage);
