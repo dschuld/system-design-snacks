@@ -7,5 +7,6 @@ window.journeyRegistry = [
     'microservices-patterns.json',
     'data-architecture.json',
     'caching-strategies.json',
-    'load-balancing-deep-dive.json'
+    'load-balancing-deep-dive.json',
+    'advanced-messaging-patterns.json'
 ];
