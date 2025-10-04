@@ -343,7 +343,7 @@
                             Next →
                         </button>
                         <button id="claude-exercise-btn" class="claude-exercise-btn" onclick="openExerciseInClaude()">
-                            💬 Discuss Own Solution with Claude
+                            💬 Discuss Own Solution with ChatGPT
                         </button>
                     </div>
                 </div>
@@ -475,13 +475,13 @@
                     contextMessage += previousLessonContext;
                 }
 
-                contextMessage += `\n\n--- EXERCISE FOR DISCUSSION ---\n${exerciseText}\n--- EXERCISE FOR DISCUSSION END ---\n==============\nThis is an answer to this exercise in System Design. Review it and provide feedback. Focus mostly on the points that were learning in this lesson, taking into account the content from the previous lessons:`;
+                contextMessage += `\n\n--- EXERCISE FOR DISCUSSION ---\n${exerciseText}\n--- EXERCISE FOR DISCUSSION END ---\n==============\nNext I will show you an answer to this exercise in System Design. Review it and provide feedback. Focus mostly on the points that were learning in this lesson, taking into account the content from the previous lessons:`;
 
                 // URL encode the full message
                 const encodedText = encodeURIComponent(contextMessage);
 
                 // Create Claude URL
-                const claudeUrl = `https://claude.ai/new?q=${encodedText}`;
+                const claudeUrl = `https://chatgpt.com/?q=${encodedText}`;
 
                 // Open in new tab
                 window.open(claudeUrl, '_blank');
@@ -524,14 +524,14 @@
                 }
                 
                 // Create the prefix text with lesson topic
-                const prefixText = `The following text is a part of study material on the topic "${lessonTitle}".\n\n`;
+                const prefixText = `The following text is a part of study material on the topic "${lessonTitle}". I have some questions about it I would like to ask.\n\n`;
                 const fullText = prefixText + "```" + sectionText + "```";
                 
                 // URL encode the text
                 const encodedText = encodeURIComponent(fullText);
                 
                 // Create Claude URL
-                const claudeUrl = `https://claude.ai/new?q=${encodedText}`;
+                const claudeUrl = `https://chatgpt.com/?q=${encodedText}`;
                 
                 // Open in new tab
                 window.open(claudeUrl, '_blank');
