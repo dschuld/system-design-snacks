@@ -9,5 +9,6 @@ window.journeyRegistry = [
     'caching-strategies.json',
     'load-balancing-deep-dive.json',
     'advanced-messaging-patterns.json',
-    'authentication-authorization.json'
+    'authentication-authorization.json',
+    'fault-tolerance-distributed-systems.json'
 ];
