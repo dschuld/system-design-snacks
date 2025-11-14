@@ -10,5 +10,6 @@ window.journeyRegistry = [
     'load-balancing-deep-dive.json',
     'advanced-messaging-patterns.json',
     'authentication-authorization.json',
-    'fault-tolerance-distributed-systems.json'
+    'fault-tolerance-distributed-systems.json',
+    'storytelling.json'
 ];
