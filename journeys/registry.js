@@ -11,5 +11,6 @@ window.journeyRegistry = [
     'advanced-messaging-patterns.json',
     'authentication-authorization.json',
     'fault-tolerance-distributed-systems.json',
-    'storytelling.json'
+    'storytelling.json',
+    'modern-java-kotlin.json'
 ];
